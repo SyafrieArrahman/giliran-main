@@ -5,20 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Giliran Main</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="app">
-  <header class="top">
+<header class="top">
+  <div class="top-inner">
     <div>
       <h1 class="display">Matching Partner and Match Pukul Kok 599</h1>
       <p>Rotasi otomatis: yang paling sedikit main & paling lama nunggu diutamakan, sambil dicariin kombinasi partner dan lawan yang belum pernah ketemu.</p>
       <div id="sessionMeta"></div>
     </div>
     <button class="btn-ghost hidden" id="resetBtn">Sesi baru</button>
-  </header>
+  </div>
+</header>
 
+<div id="app">
   <div id="loadingNote">Memuat sesi...</div>
 
   <section id="setupSection" class="panel hidden">
@@ -33,15 +36,15 @@
         <input type="number" id="numCourtsInput" min="1" max="10" value="2">
       </div>
       <div>
-        <label>Format</label>
-        <div class="format-toggle">
+        <label id="formatLabel">Format</label>
+        <div class="format-toggle" role="group" aria-labelledby="formatLabel">
           <button type="button" class="format-btn active" data-format="doubles">Ganda</button>
           <button type="button" class="format-btn" data-format="singles">Tunggal</button>
         </div>
       </div>
     </div>
     <button class="btn-primary" id="generateRosterBtn">Buat daftar pemain</button>
-    <div id="setupError" class="hidden" style="color:var(--alert-coral);font-size:13px;margin-top:10px;"></div>
+    <div id="setupError" class="form-error hidden" role="alert"></div>
   </section>
 
   <section id="rosterSection" class="panel hidden">
@@ -51,6 +54,10 @@
   </section>
 
   <section id="liveSection" class="hidden">
+    <div class="toolbar">
+      <button class="btn-ghost btn-small" id="undoBtn" disabled>Urungkan</button>
+      <span class="hint">Ketuk nama di lapangan untuk ganti pemain.</span>
+    </div>
     <div class="courts-row" id="courtsRow"></div>
 
     <div class="panel">
@@ -58,8 +65,8 @@
         <h2>Antrian</h2>
         <button class="btn-ghost btn-small" id="addLateBtn">+ Tambah pemain</button>
       </div>
-      <div id="addLateForm" class="hidden" style="display:flex;gap:8px;margin-bottom:14px;">
-        <input type="text" id="addLateInput" placeholder="Nama pemain" style="flex:1;">
+      <div id="addLateForm" class="late-form hidden">
+        <input type="text" id="addLateInput" placeholder="Nama pemain" aria-label="Nama pemain">
         <button class="btn-primary btn-small" id="addLateConfirm">Tambah</button>
         <button class="btn-ghost btn-small" id="addLateCancel">Batal</button>
       </div>
@@ -68,7 +75,10 @@
     </div>
 
     <div class="panel">
-      <h2>Statistik</h2>
+      <div class="panel-header-row">
+        <h2>Statistik</h2>
+        <button class="btn-ghost btn-small" id="copySummaryBtn">Salin ringkasan</button>
+      </div>
       <table class="stats-table">
         <thead><tr><th>Nama</th><th>Main</th><th>Status</th></tr></thead>
         <tbody id="statsBody"></tbody>
@@ -76,6 +86,34 @@
     </div>
   </section>
 </div>
+
+<dialog id="confirmDialog" class="dialog" aria-labelledby="confirmTitle">
+  <div class="dialog-body">
+    <h2 id="confirmTitle">Mulai sesi baru?</h2>
+    <p class="dialog-text">Daftar pemain, antrian, dan riwayat partner di sesi ini akan terhapus. Ini tidak bisa diurungkan.</p>
+    <div class="dialog-actions">
+      <button type="button" class="btn-ghost" id="confirmCancel">Batal</button>
+      <button type="button" class="btn-primary" id="confirmOk">Hapus &amp; mulai baru</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="swapDialog" class="dialog" aria-labelledby="swapTitle">
+  <div class="dialog-body">
+    <h2 id="swapTitle">Ganti pemain</h2>
+    <label id="swapOutLabel">Setelah diganti:</label>
+    <div class="format-toggle" role="group" aria-labelledby="swapOutLabel">
+      <button type="button" class="format-btn active" data-outcome="wait">Antri lagi</button>
+      <button type="button" class="format-btn" data-outcome="rest">Istirahat</button>
+      <button type="button" class="format-btn" data-outcome="leave">Pulang</button>
+    </div>
+    <label class="dialog-label">Pengganti dari antrian</label>
+    <div class="swap-list" id="swapList"></div>
+    <div class="dialog-actions">
+      <button type="button" class="btn-ghost" id="swapCancel">Batal</button>
+    </div>
+  </div>
+</dialog>
 
 <script src="script.js"></script>
 </body>
